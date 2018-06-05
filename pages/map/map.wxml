@@ -1,0 +1,18 @@
+<view class="page-body">
+  <view class="page-section page-section-gap">
+    <map
+      id="map"
+      latitude="{{latitude}}"
+      longitude="{{longitude}}"
+      markers='{{markers}}'
+      bindtap='tap'
+      bindmarkertap=''
+      bindregionchange='regionChange'
+      show-location='true'
+    ></map>
+  </view>
+  <view>
+    <button class="btn" bindtap='markPoint'>进入标记模式</button>
+    <button class="btn" bindtap='test'>test</button>
+  </view>
+</view>
