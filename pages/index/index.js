@@ -4,18 +4,18 @@ const app = getApp()
 var userLocation = {};
 Page({
   data: {
-    motto: 'Hello World',
     userInfo: {},
     hasUserInfo: false,
-    canIUse: wx.canIUse('button.open-type.getUserInfo')
   },
   //事件处理函数
-  bindViewTap: function() {
-    wx.navigateTo({
-      url: '../logs/logs'
-    })
-  },
   onLoad: function () {
+    wx.getSystemInfo({
+      success: (res) => {
+        console.log(res);
+        app.globalData.windowHeight = res.windowHeight,
+        app.globalData.windowWidth = res.windowWidth
+      }
+    });
     wx.getLocation({
       success: function(res) {
         userLocation.long = res.longitude;
@@ -49,6 +49,19 @@ Page({
       })
     }
   },
+
+  onReady: function() {
+    this.checkReady();
+  },
+
+  checkReady: function() {
+    if (this.data.userInfo.length === 0 || userLocation.length === 0) {
+      setTimeout(this.checkReady, 100);
+    } else {
+      setTimeout(this.navToMap, 1500);
+    }
+  },
+
   getUserInfo: function(e) {
     console.log(e)
     app.globalData.userInfo = e.detail.userInfo
@@ -57,9 +70,17 @@ Page({
       hasUserInfo: true
     })
   },
+
   navToMap: function(e) {
-    wx.navigateTo({
+    console.log("跳转");
+    wx.switchTab({
       url: '../map/map',
+      success: (e) => {
+        console.log(e);
+      },
+      fail: (e) => {
+        console.log(e);
+      }
     })
   }
 })

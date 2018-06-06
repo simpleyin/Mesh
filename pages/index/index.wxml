@@ -1,13 +1,12 @@
 <!--index.wxml-->
 <view class="container">
-  <view class="userinfo">
-    <button wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
-    <block wx:else>
-      <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover"></image>
-      <text class="userinfo-nickname">{{userInfo.nickName}}</text>
-    </block>
-  </view>
-  <view class="usermotto">
-    <button bindtap='navToMap'>Start</button>
-  </view>
+<text class="title_text">MESH</text>
+  <image src="../../assets/pic/mesh_title_pic.png" class="title_pic" mode='aspectFit'></image>
+    <view class="page__bd page__bd_spacing">
+        <view class="weui-footer">
+            <view class="weui-footer__text">made by huangyin@www.simpleyin.xyz</view>
+        </view>
+    </view>
 </view>
+
+

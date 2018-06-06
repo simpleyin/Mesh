@@ -3,12 +3,38 @@
     "pages/index/index",
     "pages/logs/logs",
     "pages/map/map",
-    "pages/event_edit/event_edit"
+    "pages/event_edit/event_edit",
+    "pages/event_log/event_log",
+    "pages/user_info/user_info"
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "WeChat",
+    "navigationBarTitleText": "Mesh",
     "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#dddddd",
+    "selectedColor": "#3cc51f",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [{
+      "pagePath": "pages/map/map",
+      "text": "地图",
+      "iconPath": "assets/pic/map_n.png",
+      "selectedIconPath": "assets/pic/map_s.png"
+    },
+    {
+      "pagePath": "pages/event_log/event_log",
+      "text": "新事件",
+      "iconPath": "assets/pic/mail_n.png",
+      "selectedIconPath": "assets/pic/mail_s.png"
+    },
+    {
+      "pagePath": "pages/user_info/user_info",
+      "text": "个人中心",
+      "iconPath": "assets/pic/user_n.png",
+      "selectedIconPath": "assets/pic/user_s.png"
+    }]
   }
 }

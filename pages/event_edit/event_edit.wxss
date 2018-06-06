@@ -1,2 +1,19 @@
 /* pages/event_edit/event_edit.wxss */
 @import '../../lib/weui/weui.wxss';
+
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+.weui-cell {
+  padding-top: 5px;
+  padding-bottom: 3px;
+}
+
+/* .page {
+  height: 100%;
+  width: auto;
+  border: 5px solid red;
+  border-radius: 2px;
+} */

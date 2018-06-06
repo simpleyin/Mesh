@@ -8,11 +8,10 @@
       bindtap='tap'
       bindmarkertap=''
       bindregionchange='regionChange'
+      controls='{{controls}}'
+      bindcontroltap='tapControl'
       show-location='true'
     ></map>
   </view>
-  <view>
-    <button class="btn" bindtap='markPoint'>进入标记模式</button>
-    <button class="btn" bindtap='test'>test</button>
-  </view>
+  <button bindtap='test'>测试</button>
 </view>
