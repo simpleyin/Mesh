@@ -1,5 +1,5 @@
 // pages/event_edit/event_edit.js
-var name,address,lat,lng;
+
 Page({
 
   /**
@@ -13,13 +13,17 @@ Page({
       '轻微', '较严重', '严重', '十分严重'
     ],
     level: 0, //严重程度
-    index: 0 //event level picker index
+    index: 0, //event level picker index
+    userName: "huang",
+    userId: 0,
+    city: "重庆"    //TODO
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    var data = JSON.parse(options.data);
     var d = new Date().toISOString().split("T");
     var date = d[0];
     var time = d[1].substr(0, 5);
@@ -27,11 +31,21 @@ Page({
       date: date,
       time: time
     })
-    console.log(options);
-    name = options.name;
-    address = options.address;
-    lat = options.lat;
-    lng = options.lng;
+    console.log(data);
+    if (data !== undefined || data !== {}) {
+      this.setData({
+        landmark: data.landmark,
+        address: data.address,
+        lat: data.lat,
+        lng: data.lng
+      })
+    } else {
+      wx.showModal({
+        title: '警告',
+        content: '获取位置信息出错',
+        showCancel: false
+      })
+    }
   },
 
   /**
@@ -120,6 +134,12 @@ Page({
         return false;
       }
     }
+    data.lng = this.data.lng + "";
+    data.lat = this.data.lat + "";
+    data.userName = this.data.userName;
+    data.userId = this.data.userId;
+    data.address = this.data.address;
+    data.city = this.data.city;
     this.submitForm(data);
   },
 
@@ -131,6 +151,8 @@ Page({
     wx.request({
       url: 'http://localhost:8080/mesh/putEvent',
       data: JSON.stringify(data),
+      //处理中文乱码
+      header: {'content-type': 'application/x-www-form-urlencoded;charset=utf-8'},
       method: "POST",
       success: (e) => {
         console.log(e);

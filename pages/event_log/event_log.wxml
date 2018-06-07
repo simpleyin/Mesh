@@ -1,2 +1,10 @@
 <!--pages/event_log/event_log.wxml-->
-<text>pages/event_log/event_log.wxml</text>
+<view class="page">
+  <view class="weui-cells__title">附近事件</view>
+  <view wx:for="{{events}}" wx:for-item="item" class="weui-cells weui-cells_after-title item level-1">
+    <navigator url="" class="weui-cell weui-cell_access" hover-class='weui-cell_avtive'>
+      <view class="weui-cell__bd">{{item.title}}</view>
+      <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+    </navigator>
+  </view>
+</view>

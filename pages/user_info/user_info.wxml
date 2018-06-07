@@ -1,2 +1,14 @@
 <!--pages/user_info/user_info.wxml-->
-<text>pages/user_info/user_info.wxml</text>
+<view class="page">
+  <view class="page_bd">
+    <view class="weui-cells">
+      <view class="weui-cell">
+        <view class="weui-cell__hd">
+          <!-- <image src=""></image> -->
+        </view>
+        <view class="weui-cell__db">设置home, 接受范围，</view>
+        <view class="weui-cell__db">我发出的事件列表</view>
+      </view>
+    </view>
+  </view>
+</view>

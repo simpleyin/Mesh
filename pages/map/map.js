@@ -93,6 +93,7 @@ Page({
     qqMapSdk = new qqMap({
       key: 'PVKBZ-ETYRJ-7ZAF3-KISNA-F5TET-UXFW4'
     });
+    this.getCurrentRange().then(d => this.loadEventMarker(d));
   },
 
   /**
@@ -152,7 +153,8 @@ Page({
    */
   regionChange: function (e) {
     if (e.type === "end") {
-      this.getCurrentRange();
+      console.log(e);
+      this.getCurrentRange().then(d => this.loadEventMarker(d));
       this.mapCtx.getScale({
         success: function (res) {
           this.setData({
@@ -160,7 +162,7 @@ Page({
         })
         }.bind(this)
       });
-      this.loadEventMarker();
+      
     }
   },
 
@@ -183,67 +185,135 @@ Page({
    * 得到当前地图区域的范围，并保存
    */
   getCurrentRange: function() {
-    this.mapCtx.getRegion({
-      success: function(res) {
-        console.log(res);
-        this.setData({
-          'currentNe.lng': res.northeast.longitude,
-          'currentNe.lat': res.northeast.latitude,
-          'currentSw.lng': res.southwest.longitude,
-          'currentSw.lat': res.southwest.latitude,
-        })
-      }.bind(this)
+    return new Promise((resolve) => {
+      this.mapCtx.getRegion({
+        success: function (res) {
+          console.log(res);
+          this.setData({
+            'currentNe.lng': res.northeast.longitude,
+            'currentNe.lat': res.northeast.latitude,
+            'currentSw.lng': res.southwest.longitude,
+            'currentSw.lat': res.southwest.latitude,
+          })
+          resolve({
+            'ne_lng': res.northeast.longitude,
+            'ne_lat': res.northeast.latitude,
+            'sw_lng': res.southwest.longitude,
+            'sw_lat': res.southwest.latitude,
+          });
+        }.bind(this)
+      })
     })
   },
 
   /**
    * 根据当前地图区域加载事件标记
    */
-  loadEventMarker: function() {
-    请求服务器得到当前区域的地标
-    若scale超过规定的等级则不加载
+  loadEventMarker: function(d) {
+    //请求服务器得到当前区域的地标
+    //若scale超过规定的等级则不加载
     if (this.data.currentScale < this.data.MAX_SCALE) {
       return false;
     }
-    this.requestEventMarker();
+    this.requestEventMarker(d);
   },
   
   /**
    * 向服务器请求获取当前地图区域的事件集合
    */
-  requestEventMarker: function() {
-    var data = {
-      neLng: this.data.currentNe.lng,
-      neLat: this.data.currentNe.lat,
-      swLng: this.data.currentSw.lng,
-      swLat: this.data.currentSw.lat
-    }
-    console.log(data);
+  requestEventMarker: function(d) {
+    //d.minLevel = 0; 通过用户设置的危险等级范围来进行筛选
     wx.request({
       url: 'http://localhost:8080/mesh/getEventMarker',
       method: 'POST',
-      data: JSON.stringify(data),
+      dataType: "json",
+      data: JSON.stringify(d),
       success: (res) => {
-
+        //进行渲染
+        console.log(res);
+        if (res.data.size !== 0) {
+          var markers = this.buildMarkers(res.data.data);
+          this.setData({
+            markers: markers
+          })
+        }
       },
       fail: (res) => {
 
       }
     })
   },
+  
+  /**
+   * 将数据构造为markers数组, 同时将event信息保存到对应的marker上
+   * data: array
+   * return array
+   */
+  buildMarkers: function(data) {
+      //   {
+      //     id: 0,
+      //     iconPath: "../../assets/pic/location.png",
+      //     longitude: index.userLocation.long,
+      //     latitude: index.userLocation.lat,
+      //     width: 30,
+      //     height: 30
+      //   
+    var res = [];
+    for (var i = 0; i < data.length; i++) {
+      var marker = {};
+      marker.title = data[i].title;
+      marker.description = data[i].description;
+      marker.address = data[i].address;
+      marker.id = i;
+      marker.level = data[i].level;
+      marker.iconPath = this.getPicPathByLevel(data[i].level);
+      marker.longitude = data[i].lng;
+      marker.latitude = data[i].lat;
+      marker.width = 30;
+      marker.height = 30;
+      marker.callout = {
+        content: data[i].title,
+        fontSize: 14,
+        color: '#ffffff',
+        bgColor: '#000000',
+        padding: 8,
+        borderRadius: 4,
+        boxShadow: '4px 8px 16px 0 rgba(0)'
+      },
+      res.push(marker);
+    }
+    return res;
+  },
 
-  renderMarkers: function(data) {
-
+  getPicPathByLevel: function(level) {
+    var path = "";
+    switch(level) {
+      case 0:
+          path = "../../assets/pic/level_0.png";
+          break;
+      case 1:
+        path = "../../assets/pic/level_1.png";
+        break;
+      case 2:
+        path = "../../assets/pic/level_2.png";
+        break;
+      case 3:
+        path = "../../assets/pic/level_3.png";
+        break;
+        default:
+        path = "../../assets/pic/location.png";
+    }
+    return path;
   },
 
   test: function (e) {
     //使用该函数进行地点选择，保存返回的坐标，进行事件创建.
     this.mapCtx.moveToLocation();
-    console.log(this.data);
+    
   },
 
   tapControl: function(e) {
-    console.log(e.controlId);
+    
     if (e.controlId === 0) {
       //create new event
       this.createEvent();
@@ -257,13 +327,39 @@ Page({
   },
 
 /**
+ * 点击marker上的callout触发
+ */
+  tapCallout: function(e) {
+    console.log(e);
+  },
+
+/**
+ * 点击marker触发 
+ */
+  tapMarker: function(e) {
+    this.showEventDetails(e.markerId);
+  },
+
+  showEventDetails: function(markerId) {
+    console.log(markerId);
+    console.log(this.data.markers);
+    var marker = this.data.markers[markerId];
+    //TODO 创建自定义modal的组件
+    wx.showModal({
+      title: marker.title,
+      content: marker.description + "\n危险等级: " + marker.level,
+      showCancel: false,
+    })
+  },
+
+/**
  * 根据使用腾讯地图搜索获得的位置信息进行定位
  * TODO 并不能成功设置定位点，并进行视角移动
  */
   searchAndLocate: function() {
     wx.chooseLocation({
       success: (res) => {
-        console.log(res);
+        
         this.setData({
           latitude: res.latitude,
           longitude: res.longitude
@@ -280,17 +376,31 @@ Page({
    * 创建事件，并跳转至event_edit页面
    */
   createEvent: function() {
-    var name, address, lat, lng;
+    var data = {};
+    wx.showLoading({
+      title: 'loading...',
+    });
     wx.chooseLocation({
-      success: function(res) {
-        name = res.name;
-        address = res.address;
-        lat = res.latitude;
-        lng = res.longitude;
+      success: (res) => {
+        data.landmark = res.name;
+        data.address = res.address + res.name;
+        data.lat = res.latitude;
+        data.lng = res.longitude;
+        console.log("成功获取位置信息");
+        wx.hideLoading();
         wx.navigateTo({
-          url: '../event_edit/event_edit?name=' + name + 'address=' + address + 'lat=' + lat + 'lng=' + lng,
+          url: '../event_edit/event_edit?data=' + JSON.stringify(data),
         });
       },
+      fail: (res) => {
+        console.log("调用失败");
+        wx.hideLoading();
+        wx.showModal({
+          title: '警告',
+          content: '调用腾讯地图API失败，请稍后重试',
+          showCancel: false
+        })
+      }
     });
   }
 

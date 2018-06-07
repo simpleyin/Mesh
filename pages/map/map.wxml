@@ -6,10 +6,11 @@
       longitude="{{longitude}}"
       markers='{{markers}}'
       bindtap='tap'
-      bindmarkertap=''
+      bindmarkertap='tapMarker'
       bindregionchange='regionChange'
       controls='{{controls}}'
       bindcontroltap='tapControl'
+      bindcallouttap='tapCallout'
       show-location='true'
     ></map>
   </view>
