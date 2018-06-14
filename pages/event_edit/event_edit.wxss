@@ -11,6 +11,11 @@ html, body {
   padding-bottom: 3px;
 }
 
+.address-text {
+  color: #a1a1a1;
+  font-size: 0.7rem;
+}
+
 /* .page {
   height: 100%;
   width: auto;

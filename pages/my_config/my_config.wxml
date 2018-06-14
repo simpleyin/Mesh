@@ -1,0 +1,26 @@
+<view class="section section_gap">
+  <text class="weui-cells__title">设置附件事件可接收范围(km)</text>
+  <view class="body-view">
+    <slider bindchange="rangeChage" max="300" step="10" value="{{range}}" show-value/>
+  </view>
+</view>
+
+<view class="section section_gap">
+  <view class="weui-cells__title">个人设置</view>
+        <view class="weui-cells weui-cells_after-title">
+            <navigator url="" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
+                <view class="weui-cell__hd">
+                    <image src="{{icon}}" style="margin-right: 5px;vertical-align: middle;width:20px; height: 20px;"></image>
+                </view>
+                <view class="weui-cell__bd">个人资料</view>
+                <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+            </navigator>
+            <navigator url="" class="weui-cell weui-cell_access" hover-class="weui-cell_active">
+                <view class="weui-cell__hd">
+                    <image src="{{icon}}" style="margin-right: 5px;vertical-align: middle;width:20px; height: 20px;"></image>
+                </view>
+                <view class="weui-cell__bd">隐私设置</view>
+                <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+            </navigator>
+        </view>
+</view>

@@ -1,5 +1,7 @@
 // pages/event_log/event_log.js
 const RANGE_SCALE = 0.5;
+var util = require("../../utils/util.js")
+var databus = require("../../databus/databus.js")
 Page({
 
   /**
@@ -7,7 +9,8 @@ Page({
    */
   data: {
     events: [
-    ]
+    ],
+    array: []
   },
 
   /**
@@ -15,6 +18,7 @@ Page({
    */
   onLoad: function (options) {
     //获取位置信息
+    
   },
 
   /**
@@ -57,7 +61,8 @@ Page({
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh: function () {
-    console.log("pullDown");
+
+    this.onLoad();
   },
 
   /**
@@ -96,11 +101,14 @@ Page({
   getEventList: function(d) {
     return new Promise((resolve) => {
       wx.request({
-        url: 'http://localhost:8080/mesh/getEventMarker',
+        url: databus.host + '/mesh/getEventMarker',
         method: 'POST',
         dataType: "json",
         data: JSON.stringify(this.getReveiveRange(d)),
         success: (res) => {
+          this.setData({
+            array: res.data.data
+          })
           resolve(res.data.data);
         }
       })
@@ -111,13 +119,12 @@ Page({
     var d = [];
     if (data !== [] || data !== undefined) {
       data.forEach(_d => {
-        d.push({
-          title: _d.title,
-          level: _d.level
-        });
+        _d.levelName = util.getLevelName(_d.level);
+        _d._string = JSON.stringify(_d);
+        d.push(_d);
       })
       this.setData({
-        event: d
+        events: d
       });
     }
     wx.hideLoading();

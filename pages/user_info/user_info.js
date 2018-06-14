@@ -1,4 +1,5 @@
 // pages/user_info/user_info.js
+var app = getApp()
 Page({
 
   /**
@@ -12,7 +13,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-  
+		this.setData({
+			userInfo: app.globalData.userInfo
+		});
   },
 
   /**
@@ -62,5 +65,13 @@ Page({
    */
   onShareAppMessage: function () {
   
+  },
+
+  showWarn: function() {
+    wx.showModal({
+      title: '警告',
+      content: '该功能暂未开放',
+      showCancel: false
+    })
   }
 })

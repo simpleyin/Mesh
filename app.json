@@ -5,36 +5,44 @@
     "pages/map/map",
     "pages/event_edit/event_edit",
     "pages/event_log/event_log",
-    "pages/user_info/user_info"
+    "pages/user_info/user_info",
+    "pages/event_detail/event_detail",
+    "pages/my_post/my_post",
+    "pages/my_config/my_config"
   ],
   "window": {
-    "backgroundTextStyle": "light",
+    "backgroundTextStyle": "dark",
     "navigationBarBackgroundColor": "#fff",
     "navigationBarTitleText": "Mesh",
     "navigationBarTextStyle": "black"
+  },
+  "usingComponents": {
+    "my-modal": "./component/my-modal/my-modal"
   },
   "tabBar": {
     "color": "#dddddd",
     "selectedColor": "#3cc51f",
     "borderStyle": "black",
     "backgroundColor": "#ffffff",
-    "list": [{
-      "pagePath": "pages/map/map",
-      "text": "地图",
-      "iconPath": "assets/pic/map_n.png",
-      "selectedIconPath": "assets/pic/map_s.png"
-    },
-    {
-      "pagePath": "pages/event_log/event_log",
-      "text": "新事件",
-      "iconPath": "assets/pic/mail_n.png",
-      "selectedIconPath": "assets/pic/mail_s.png"
-    },
-    {
-      "pagePath": "pages/user_info/user_info",
-      "text": "个人中心",
-      "iconPath": "assets/pic/user_n.png",
-      "selectedIconPath": "assets/pic/user_s.png"
-    }]
+    "list": [
+      {
+        "pagePath": "pages/map/map",
+        "text": "地图",
+        "iconPath": "assets/pic/map_n.png",
+        "selectedIconPath": "assets/pic/map_s.png"
+      },
+      {
+        "pagePath": "pages/event_log/event_log",
+        "text": "新事件",
+        "iconPath": "assets/pic/mail_n.png",
+        "selectedIconPath": "assets/pic/mail_s.png"
+      },
+      {
+        "pagePath": "pages/user_info/user_info",
+        "text": "个人中心",
+        "iconPath": "assets/pic/user_n.png",
+        "selectedIconPath": "assets/pic/user_s.png"
+      }
+    ]
   }
 }

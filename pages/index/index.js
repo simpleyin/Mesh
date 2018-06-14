@@ -11,7 +11,7 @@ Page({
   onLoad: function () {
     wx.getSystemInfo({
       success: (res) => {
-        console.log(res);
+
         app.globalData.windowHeight = res.windowHeight,
         app.globalData.windowWidth = res.windowWidth
       }
@@ -63,7 +63,7 @@ Page({
   },
 
   getUserInfo: function(e) {
-    console.log(e)
+
     app.globalData.userInfo = e.detail.userInfo
     this.setData({
       userInfo: e.detail.userInfo,
@@ -72,16 +72,23 @@ Page({
   },
 
   navToMap: function(e) {
-    console.log("跳转");
-    wx.switchTab({
-      url: '../map/map',
-      success: (e) => {
-        console.log(e);
-      },
-      fail: (e) => {
-        console.log(e);
+
+    wx.showModal({
+      title: '提示',
+      content: '作为演示用例，请先创建事件',
+      showCancel: false,
+      success: () => {
+        wx.switchTab({
+          url: '../map/map',
+          success: (e) => {
+
+          },
+          fail: (e) => {
+
+          }
+        })
       }
-    })
+    });
   }
 })
 

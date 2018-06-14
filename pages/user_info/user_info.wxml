@@ -1,14 +1,47 @@
 <!--pages/user_info/user_info.wxml-->
 <view class="page">
-  <view class="page_bd">
-    <view class="weui-cells">
-      <view class="weui-cell">
-        <view class="weui-cell__hd">
-          <!-- <image src=""></image> -->
-        </view>
-        <view class="weui-cell__db">设置home, 接受范围，</view>
-        <view class="weui-cell__db">我发出的事件列表</view>
-      </view>
-    </view>
-  </view>
+<view class="container">  
+  <view class="userinfo">  
+    <image class="userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover"></image>  
+    <text class="userinfo-nickname">{{userInfo.nickName}}</text>  
+  </view>  
+	<view class="page__bd config-list">
+		<view class="weui-cell">
+			<view class="weui-cell_hd">
+				<image src="/assets/pic/my_post.png" style="margin-right: 5px;vertical-align: middle;width:20px; height: 20px;"></image>
+			</view>
+			<navigator url="../my_post/my_post" class="weui-cell_access" hover-class="weui-cell_active">
+        <view class="weui-cell__ft">我的发布</view>
+      </navigator>
+		</view>
+
+		<view class="weui-cell">
+			<view class="weui-cell_hd">
+				<image src="/assets/pic/eye.png" style="margin-right: 5px;vertical-align: middle;width:20px; height: 20px;"></image>
+			</view>
+				<navigator bindtap='showWarn' url="" class="weui-cell_access" hover-class="weui-cell_active">
+        <view class="weui-cell__ft">我的关注</view>
+      </navigator>
+		</view>
+
+    		<view class="weui-cell">
+			<view class="weui-cell_hd">
+				<image src="/assets/pic/message.png" style="margin-right: 5px;vertical-align: middle;width:20px; height: 20px;"></image>
+			</view>
+				<navigator bindtap='showWarn' url="" class="weui-cell_access" hover-class="weui-cell_active">
+        <view class="weui-cell__ft">消息</view>
+      </navigator>
+		</view>
+
+    		<view class="weui-cell">
+			<view class="weui-cell_hd">
+				<image src="/assets/pic/configure.png" style="margin-right: 5px;vertical-align: middle;width:20px; height: 20px;"></image>
+			</view>
+				<navigator url="../my_config/my_config" class="weui-cell_access" hover-class="weui-cell_active">
+        <view class="weui-cell__ft">设置</view>
+      </navigator>
+		</view>
+
+	</view>  
+</view>  
 </view>

@@ -1,0 +1,89 @@
+<view class="page">
+  <view class="page__bd">
+    <view class="weui-cells__title text-center">事件详情</view>
+    <view class="weui-cells__title">事件名</view>
+    <view class="weui-cell">
+      <view class="weui-cell__ft text-bd">{{event.title}}</view>
+    </view>
+
+    <view class="weui-cells__title">图片</view>
+    <view class="swiper-cell">
+        <swiper indicator-dots="{{indicatorDots}}"
+  autoplay="{{autoplay}}" interval="{{interval}}" duration="{{duration}}" >
+          <block wx:for="{{pics}}" wx:key="*this">
+            <swiper-item>
+              <image src="{{item}}" class="slide-image" width="355" height="150"/>
+            </swiper-item>
+          </block>
+        </swiper>
+    </view>
+
+    <view class="weui-cells__title">事件介绍</view>
+    <view class="weui-cell">
+      <view class="weui-cell__ft text-bd">
+      <text>{{event.description}}</text>
+      </view>
+    </view>
+
+    <view class="weui-cells__title">地址</view>
+    <view class="weui-cell">
+      <view class="weui-cell__ft text-bd">{{event.address}}</view>
+    </view>
+
+    <view class="weui-cells__title">时间</view>
+    <view class="weui-cell">
+      <view class="weui-cell__ft text-bd">{{event.date}}</view>
+    </view>
+
+
+    <view class="weui-cells__title">严重程度</view>
+    <view class="weui-cell">
+      <view class="weui-cell__ft text-bd">{{event.levelName}}</view>
+    </view>
+  </view>
+  <view wx:if="{{!fromUserPage}}" class="footer-group-fixed">
+    <!-- <button class="weui-btn mini-btn group-item" type="primary" size="mini">补充</button>
+    <button class="weui-btn mini-btn group-item" type="default" size="mini">修改</button>
+    <button class="weui-btn mini-btn group-item" type="warn" size="mini">举报</button>  -->
+    <view class="flex-item" bindtap='makeAdditionalRemark'>
+      <view class="image-item">
+        <image src="/assets/pic/event_add.png" style="margin-right: 5px;vertical-align: middle;width:20px; height: 20px;"></image>
+      </view>
+      <view class="text-item">补充</view>
+    </view>
+
+    <view class="flex-item" bindtap='makeEdit'>
+      <view class="image-item">
+        <image src="/assets/pic/event_edit.png" style="margin-right: 5px;vertical-align: middle;width:20px; height: 20px;"></image>
+      </view>
+      <view class="text-item">修改</view>
+    </view>
+
+    <view class="flex-item" bindtap='makeWatch'>
+      <view class="image-item">
+        <image src="/assets/pic/watch.png" style="margin-right: 5px;vertical-align: middle;width:20px; height: 20px;"></image>
+      </view>
+      <view class="text-item">{{watchedState}}</view>
+    </view>
+
+    <view class="flex-item" bindtap='makeReport'>
+          <view class="image-item">
+        <image src="/assets/pic/report.png" style="margin-right: 5px;vertical-align: middle;width:20px; height: 20px;"></image>
+      </view>
+      <view class="text-item">举报</view>
+    </view>
+
+  </view>
+
+  <view wx:if="{{fromUserPage}}" class="footer-group-fixed">
+    <view class="flex-item" bindtap='makeEdit'>
+      <text>修改</text>
+    </view>
+    <view class="flex-item" bindtap='makeReport'>
+      <text>删除</text>
+    </view>
+  </view>
+  </view>
+
+
+

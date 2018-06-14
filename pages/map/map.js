@@ -1,8 +1,9 @@
 // pages/map/map.js
 var index = require("../index/index.js");
 var qqMap = require("../../lib/qqmap-wx-jssdk1.0/qqmap-wx-jssdk.min.js");
-var mock = require("../../metaData/mock.js");
-var qqMapSdk;
+var mock = require("../../utils/mock.js")
+var util = require("../../utils/util.js");
+var databus = require("../../databus/databus.js")
 var app = getApp();
 var _markModel = false;
 Page({
@@ -13,29 +14,24 @@ Page({
   data: {
     latitude: null,
     longitude: null,
-    MAX_SCALE: 9
+    MAX_SCALE: 13,
+    showModal: false,
+    modalMessage: "MESSAGE",
+    mock: true
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-  
+    //TODO 处理闪屏问题
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-    this.mapCtx = wx.createMapContext('map');
-    //初始化页面数据
-    // console.log(options);
-    // if (options.lng !== undefined && options.lat !== undefined) {
-    //   this.setData({
-    //     latitude: options.lat,
-    //     longitude: options.lng
-    //   })
-    //} else {
+    this.mapCtx = wx.createMapContext('map'); {
       wx.getLocation({
         success: (res) => {
           this.setData({
@@ -44,18 +40,8 @@ Page({
           })
         },
       })
-    //}
+    }
     this.setData({
-      // markers: [
-      //   {
-      //     id: 0,
-      //     iconPath: "../../assets/pic/location.png",
-      //     longitude: index.userLocation.long,
-      //     latitude: index.userLocation.lat,
-      //     width: 30,
-      //     height: 30
-      //   }
-      // ],
       controls: [{
         id: 0,
         iconPath: "../../assets/pic/add_event.png",
@@ -90,10 +76,14 @@ Page({
         clickable: true
       }],
     });
-    qqMapSdk = new qqMap({
-      key: 'PVKBZ-ETYRJ-7ZAF3-KISNA-F5TET-UXFW4'
+
+    this.getCurrentRange().then(d => {
+
+      this.loadEventMarker(d);
     });
-    this.getCurrentRange().then(d => this.loadEventMarker(d));
+    // if (this.data.mock) {
+    //   this.mock();
+    // }
   },
 
   /**
@@ -145,7 +135,8 @@ Page({
 
   },
 
-  setMark: function (long, lat) {
+  mock: function() {
+    mock.mockData();
   },
 
   /**
@@ -153,16 +144,14 @@ Page({
    */
   regionChange: function (e) {
     if (e.type === "end") {
-      console.log(e);
-      this.getCurrentRange().then(d => this.loadEventMarker(d));
       this.mapCtx.getScale({
         success: function (res) {
           this.setData({
-            'currentScale': res
-        })
+            'currentScale': res.scale
+          })
         }.bind(this)
       });
-      
+      this.getCurrentRange().then(d => this.loadEventMarker(d));
     }
   },
 
@@ -183,12 +172,12 @@ Page({
 
   /**
    * 得到当前地图区域的范围，并保存
+   * error: 初始时获得参数出错
    */
   getCurrentRange: function() {
     return new Promise((resolve) => {
       this.mapCtx.getRegion({
-        success: function (res) {
-          console.log(res);
+        success: (res) => { 
           this.setData({
             'currentNe.lng': res.northeast.longitude,
             'currentNe.lat': res.northeast.latitude,
@@ -201,7 +190,7 @@ Page({
             'sw_lng': res.southwest.longitude,
             'sw_lat': res.southwest.latitude,
           });
-        }.bind(this)
+        }
       })
     })
   },
@@ -212,7 +201,7 @@ Page({
   loadEventMarker: function(d) {
     //请求服务器得到当前区域的地标
     //若scale超过规定的等级则不加载
-    if (this.data.currentScale < this.data.MAX_SCALE) {
+    if (this.data.currentScale < this.data.MAX_SCALE && this.data.currentScale !== undefined) {
       return false;
     }
     this.requestEventMarker(d);
@@ -224,23 +213,19 @@ Page({
   requestEventMarker: function(d) {
     //d.minLevel = 0; 通过用户设置的危险等级范围来进行筛选
     wx.request({
-      url: 'http://localhost:8080/mesh/getEventMarker',
+      url: databus.host + '/mesh/getEventMarker',
       method: 'POST',
       dataType: "json",
       data: JSON.stringify(d),
       success: (res) => {
         //进行渲染
-        console.log(res);
-        if (res.data.size !== 0) {
+        if (res.data.size !== 0 && res.data.size !== undefined) {
           var markers = this.buildMarkers(res.data.data);
           this.setData({
             markers: markers
           })
         }
       },
-      fail: (res) => {
-
-      }
     })
   },
   
@@ -266,11 +251,13 @@ Page({
       marker.address = data[i].address;
       marker.id = i;
       marker.level = data[i].level;
+      marker.levelName = util.getLevelName(data[i].level);
       marker.iconPath = this.getPicPathByLevel(data[i].level);
       marker.longitude = data[i].lng;
       marker.latitude = data[i].lat;
       marker.width = 30;
       marker.height = 30;
+      marker.date = data[i].date;
       marker.callout = {
         content: data[i].title,
         fontSize: 14,
@@ -330,7 +317,7 @@ Page({
  * 点击marker上的callout触发
  */
   tapCallout: function(e) {
-    console.log(e);
+    
   },
 
 /**
@@ -341,14 +328,25 @@ Page({
   },
 
   showEventDetails: function(markerId) {
-    console.log(markerId);
-    console.log(this.data.markers);
+    
     var marker = this.data.markers[markerId];
     //TODO 创建自定义modal的组件
-    wx.showModal({
-      title: marker.title,
-      content: marker.description + "\n危险等级: " + marker.level,
-      showCancel: false,
+    // wx.showModal({
+    //   title: marker.title,
+    //   content: marker.description + "\n危险等级: " + marker.level,
+    //   showCancel: false,
+    // })
+    this.setData({
+      showModal: true
+    });
+    this.setData({
+      modalTitle: "事件",
+      modalName: marker.title,
+      modalMessage: marker.description,
+      modalLevel: marker.level,
+      modalLevelName: marker.levelName,
+      modalDate: util.removeZeroFromDate(marker.date),
+      modalData: JSON.stringify(marker)
     })
   },
 
@@ -372,6 +370,12 @@ Page({
     })
   },
 
+  eventModalConfirm: function() {
+    this.setData({
+      showModal: false
+    })
+  },
+
   /**
    * 创建事件，并跳转至event_edit页面
    */
@@ -386,14 +390,13 @@ Page({
         data.address = res.address + res.name;
         data.lat = res.latitude;
         data.lng = res.longitude;
-        console.log("成功获取位置信息");
+        
         wx.hideLoading();
         wx.navigateTo({
           url: '../event_edit/event_edit?data=' + JSON.stringify(data),
         });
       },
-      fail: (res) => {
-        console.log("调用失败");
+      fail: (res) => { 
         wx.hideLoading();
         wx.showModal({
           title: '警告',

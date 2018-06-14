@@ -1,6 +1,6 @@
 <view class="page-body">
   <view class="page-section page-section-gap">
-    <map
+     <map
       id="map"
       latitude="{{latitude}}"
       longitude="{{longitude}}"
@@ -12,7 +12,25 @@
       bindcontroltap='tapControl'
       bindcallouttap='tapCallout'
       show-location='true'
-    ></map>
+      hidden="{{showModal}}"
+    ></map> 
   </view>
-  <button bindtap='test'>测试</button>
 </view>
+<modal wx:if="{{showModal}}" confirm-text="✖️" bindconfirm="eventModalConfirm" class="map-modal" no-cancel>
+  <view class="modal-container-{{modalLevel}}">
+    <view class="modal-head">
+      {{modalTitle}}
+    </view>
+    <view class="modal-body">
+      <text class="modal-body-item modal-title">{{modalName}}</text>
+      <text class="modal-body-item modal-level">程度: {{modalLevelName}}</text>
+      <text class="modal-body-item modal-desription">{{modalMessage}}</text>
+      <text class="modal-body-item modal-date">{{modalDate}}</text>
+    </view>
+    <view>
+      <navigator class="modal-nav" url="/pages/event_detail/event_detail?data={{modalData}}">
+      查看详情
+      </navigator>
+    </view>
+  </view>
+</modal>

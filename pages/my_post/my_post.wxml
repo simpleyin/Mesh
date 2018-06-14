@@ -1,0 +1,10 @@
+<!--pages/my_post/my_post.wxml-->
+<view class="page">
+  <view class="weui-cells__title">我的发布</view>
+  <view wx:for="{{events}}" wx:key="{{item.id}}" wx:for-item="item" class="weui-cells weui-cells_after-title item level-{{item.level}}">
+    <navigator url="../event_detail/event_detail?data={{item._string}}&fromUserPage=true" class="weui-cell weui-cell_access" hover-class='weui-cell_avtive'>
+      <view class="weui-cell__bd">{{item.title}}</view>
+      <view class="weui-cell__ft weui-cell__ft_in-access">{{item.city}}</view>
+    </navigator>
+  </view>
+</view>

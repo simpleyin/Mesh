@@ -1,5 +1,6 @@
 // pages/event_edit/event_edit.js
-
+var databus = require("../../databus/databus.js")
+var app = getApp();
 Page({
 
   /**
@@ -14,9 +15,8 @@ Page({
     ],
     level: 0, //严重程度
     index: 0, //event level picker index
-    userName: "huang",
-    userId: 0,
-    city: "重庆"    //TODO
+    city: "重庆",   //TODO
+    imgFiles: []
   },
 
   /**
@@ -29,9 +29,12 @@ Page({
     var time = d[1].substr(0, 5);
     this.setData({
       date: date,
-      time: time
+      time: time,
+			userName: app.globalData.userInfo.nickName,
+			openId: app.globalData.openId,
+			userId: app.globalData.userId,
     })
-    console.log(data);
+
     if (data !== undefined || data !== {}) {
       this.setData({
         landmark: data.landmark,
@@ -52,7 +55,11 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-  
+    // wx.showModal({
+    //   title: '提示',
+    //   content: '请确保在刚才的地图下方勾选了地址，否则会造成创建失败',
+    //   showCancel: false
+    // })
   },
 
   /**
@@ -101,7 +108,7 @@ Page({
  * 事件表单日期设置
  */
   bindDateChange: function (e) {
-    console.log(e);
+
     this.setData({
       date: e.detail.value
     })
@@ -123,7 +130,32 @@ Page({
   },
 
   pubNewEvent: function (e) {
+    var promises = [];
     var data = e.detail.value;
+    data = this.buildSubmitData(data);
+    if (data == null) {
+      return false;
+    }
+    //TODO 完成上传图片的promise后，在提交表单
+    // for (var path of this.data.imgFiles) {
+    //   promises.push(databus.uploadFileWithTempPath(path));
+    // }
+    // Promise.all(promises).then((values) => {
+    //   console.log("get paths");
+    //   console.log(values);
+    //   data.paths = values;
+    //   this.submitForm(data);
+    // })
+    this.submitForm(data);
+  },
+
+  buildSubmitData: function (data) {
+    data.lng = this.data.lng + "";
+    data.lat = this.data.lat + "";
+    data.userName = this.data.userName;
+    data.userId = this.data.userId;
+    data.address = this.data.address;
+    data.city = this.data.city;
     for (var d in data) {
       if (data[d] === "" || data[d] === undefined || data[d].length === 0) {
         wx.showModal({
@@ -131,31 +163,25 @@ Page({
           content: '请输入完整的信息',
           showCancel: false,
         })
-        return false;
+        return null;
       }
     }
-    data.lng = this.data.lng + "";
-    data.lat = this.data.lat + "";
-    data.userName = this.data.userName;
-    data.userId = this.data.userId;
-    data.address = this.data.address;
-    data.city = this.data.city;
-    this.submitForm(data);
+    return data;
   },
 
   submitForm: function (data) {
-    console.log(JSON.stringify(data));
+
     wx.showLoading({
       title: '正在发布',
     });
     wx.request({
-      url: 'http://localhost:8080/mesh/putEvent',
+      url: databus.host + "/mesh/putEvent",
       data: JSON.stringify(data),
       //处理中文乱码
       header: {'content-type': 'application/x-www-form-urlencoded;charset=utf-8'},
       method: "POST",
       success: (e) => {
-        console.log(e);
+
         wx.hideLoading();
         //提示发布成功并返回主页面
         wx.showModal({
@@ -170,7 +196,7 @@ Page({
         })
       },
       fail: (e) => {
-        console.log(e);
+
         wx.hideLoading();
         wx.showModal({
           title: '失败',
@@ -185,6 +211,27 @@ Page({
     this.setData({
       level: e.detail.value,
       index: e.detail.value
+    })
+  },
+
+  chooseImage: function (e) {
+    var that = this;
+    wx.chooseImage({
+      sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+      sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+      success: function (res) {
+        // 返回选定照片的本地文件路径列表，tempFilePath可以作为img标签的src属性显示图片
+        that.setData({
+          imgFiles: that.data.imgFiles.concat(res.tempFilePaths)
+        });
+      }
+    })
+  },
+
+  previewImage: function (e) {
+    wx.previewImage({
+      current: e.currentTarget.id, // 当前显示图片的http链接
+      urls: this.data.imgFiles // 需要预览的图片http链接列表
     })
   }
 })
